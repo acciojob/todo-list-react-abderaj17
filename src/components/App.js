@@ -6,7 +6,6 @@ const App = () => {
   const [text, setText] = useState("");
   const [todos, setTodos] = useState([]);
 
-  // Add a new task
   const addTask = () => {
     if (!text) return;
     const newTask = { task: text, id: uuidv4(), isEditing: false };
@@ -14,88 +13,61 @@ const App = () => {
     setText("");
   };
 
-  // Delete a task
   const deleteTask = (id) => {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  // Enable edit mode for a task
   const enableEdit = (id) => {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isEditing: true };
-      }
-      return todo;
-    });
-    setTodos(updatedTodos);
+    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, isEditing: true } : todo)));
   };
 
-  // Save the edited task
   const saveTask = (id, newText) => {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, task: newText, isEditing: false };
-      }
-      return todo;
-    });
-    setTodos(updatedTodos);
+    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, task: newText, isEditing: false } : todo)));
   };
 
   return (
     <div>
       <h1>To Do List</h1>
-     
-      {/* Add Task Section */}
       <div className="add_tasks_section">
-        <input
-          type="text"
+        <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter a task"
         />
-        <button className="add" onClick={addTask}>Add</button>
+        <button onClick={addTask}>Add</button>
       </div>
 
-      {/* Tasks Section */}
       <div className="tasks_section">
-        <ul>
-          {todos.map((todo) => (
-            <li key={todo.id} className="task">
-              {todo.isEditing ? (
-                <>
-                  <input
-                    type="text"
-                    defaultValue={todo.task}
-                    onChange={(e) => setText(e.target.value)}
-                  />
-                  <button
-                    className="save"
-                    onClick={() => saveTask(todo.id, text)}
-                  >
-                    Save
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span>{todo.task}</span>
-                  <button
-                    className="edit"
-                    onClick={() => enableEdit(todo.id)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete"
-                    onClick={() => deleteTask(todo.id)}
-                  >
-                    Delete
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+        {todos.length === 0 ? (
+          <p>No tasks available</p>
+        ) : (
+          <ul>
+            {todos.map((todo) => (
+              <li key={todo.id} className="task">
+                {todo.isEditing ? (
+                  <>
+                    <textarea
+                      defaultValue={todo.task}
+                      onChange={(e) => setText(e.target.value)}
+                    />
+                    <button
+                      className="save"
+                      onClick={() => saveTask(todo.id, text)}
+                    >
+                      Save
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span>{todo.task}</span>
+                    <button className="edit" onClick={() => enableEdit(todo.id)}>Edit</button>
+                    <button className="delete" onClick={() => deleteTask(todo.id)}>Delete</button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
